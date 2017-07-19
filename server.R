@@ -2,17 +2,17 @@
 
 shinyServer(function(input, output,session){
   
-  
+## rendering geospatial plot with circle markers and clusters  
   
   output$map <- renderLeaflet({
     leaflet()  %>%
       addProviderTiles("Esri.WorldStreetMap") %>%
-      setView(lat = 40.75898, lng = -73.99394,zoom = 11)
+      setView(lat = 40.75898, lng = -73.99394,zoom = 11)   #set default view
   })
       
-  observe({
+  observe({   #observe the input from user
   
-      proxy <- leafletProxy("map") %>%
+      proxy <- leafletProxy("map") %>%    #leaflet proxy will measure the input and change according to input
       clearMarkers() %>%   
       clearMarkerClusters() %>% 
       addCircleMarkers(data = moto1 %>% filter(borough == input$borough1) %>%
@@ -21,31 +21,25 @@ shinyServer(function(input, output,session){
       addCircleMarkers(data = moto1 %>% filter(borough == input$borough1) %>%
             filter_(input$times1) %>% filter_(ifelse(input$vehicle1 == 'ALL',TRUE,"`vehicle type code 1` == input$vehicle1")) ,
             lng = ~longitude,lat = ~latitude,color = 'Red',radius =1,clusterOptions = markerClusterOptions(),group = 'CLUSTER') %>% 
-      addLayersControl(
+      addLayersControl(                        #creating group for layers
         baseGroups = c("CIRCLE","CLUSTER"),
         options = layersControlOptions(collapsed = FALSE)
       )  
 
     })
   
-  
-  # observeEvent(input$add, {
-  #   proxy <- leafletProxy('map') %>% addMarkers(
-  #     data = data1,
-  #     clusterOptions = markerClusterOptions(), clusterId = 'cluster1'
-  #   )
-  # })
+  #heatmap of collision
   
   output$heatmap <- renderLeaflet({
     leaflet() %>%  
-    addProviderTiles(providers$CartoDB.DarkMatter) %>% 
+    addProviderTiles(providers$CartoDB.DarkMatter) %>%  #importing provider tiles
       setView(lat = 40.75898, lng = -73.99394,zoom = 11) %>% 
       addLegend("topright", pal = colorNumeric(c("Red","Green","Blue"), domain = NULL, reverse = TRUE),
-                values = moto1$latitude, title = "Collision",opacity = 1.5)
+                values = moto1$latitude, title = "Collision",opacity = 1.5)    #adding a legend for color gradient
     
     })
   
-  observe({
+  observe({      #observing the heatmap filters from the user
     
     
        proxy <- leafletProxy("heatmap") %>% 
@@ -61,11 +55,11 @@ shinyServer(function(input, output,session){
                       
     })
   
-  output$plot1 <- renderPlot({
+  output$plot1 <- renderPlot({   #line chart & point chart -> number of accident vs year
     
     moto1 %>% group_by(year) %>% arrange(year) %>%
       summarise(number_of_accident = n()) %>% 
-      ggplot(aes(x = year,y = number_of_accident )) + 
+      ggplot(aes(x = year,y = number_of_accident )) +  
       geom_line(aes(colour = "Accidents")) + 
       geom_point(size = 2, color = 'red') + 
       geom_text(aes(label = number_of_accident),vjust =-1) + 
@@ -76,7 +70,7 @@ shinyServer(function(input, output,session){
   })
   
   
-  output$plot2 <- renderPlot({
+  output$plot2 <- renderPlot({    #bar plot of day of week has most number of collision -> day vs year(borough wise)
     
     moto1 %>% group_by(day,borough) %>% 
       arrange(day) %>% summarise(n = n()) %>% 
@@ -90,18 +84,18 @@ shinyServer(function(input, output,session){
   })
   
   
-  output$plot3 <- renderPlot({
+  output$plot3 <- renderPlot({  # Heatmap of hour of day has most number of collision
     
     moto1 %>% mutate(hour = hour(hms(as.character(time)))) %>%
       group_by(hour,borough) %>% summarise(Collisions = n()) %>%
       ggplot(aes(x = borough,y = hour)) + 
       geom_raster(aes(fill = Collisions)) + 
-      scale_fill_gradient(low = "darkgreen",high = "yellow") +
+      scale_fill_gradient(low = "darkgreen",high = "yellow") +   #setting color gradient for low and high frequency
       ggtitle("Heatmap of hour of day has most number of collision") +
       theme(plot.title = element_text(hjust = 0.5))
   })
   
-  output$plot4 <- renderPlot({
+  output$plot4 <- renderPlot({       #Heatmap of contributing factor vs Year 
     
     moto1 %>% group_by(year,`contributing factor vehicle 1`) %>% 
       summarise(Collision = n()) %>% 
@@ -116,7 +110,7 @@ shinyServer(function(input, output,session){
   })
   
   
-  output$table <- DT::renderDataTable({
+  output$table <- DT::renderDataTable({         #rendering dataframe on shiny dashboard using DT
     datatable(head(moto1,100),options = list(scrollX = TRUE), rownames=FALSE) %>% 
       formatStyle(input$selected, background="skyblue", fontWeight='bold')
   })

@@ -1,16 +1,16 @@
-library(shinythemes)
 
 
-shinyUI(dashboardPage(
-    dashboardHeader(title = 'MOTOR COLLISION'),
+
+shinyUI(dashboardPage(                           #initializing dashboard page
+    dashboardHeader(title = 'MOTOR COLLISION'),   #title of dashboard
     dashboardSidebar(
       
-      sidebarUserPanel("0xiNach",image = "http://www.zrox.org/0x.png"),
+      sidebarUserPanel("0xiNach",image = "http://www.zrox.org/0x.png"),  #naming sidebar panel and importing user image
       sidebarMenu(id = 'sideBarMenu',
-            menuItem("Map", tabName = "map", icon = icon("map")),
+            menuItem("Map", tabName = "map", icon = icon("map")),          #creating sidebar tabs
             menuItem("Heatmap", tabName = "heatmap1", icon = icon("map")),
             menuItem("Chart",tabName = "chart", icon = icon("bar-chart"),
-                    menuSubItem("Collision by Year",tabName = "plot1", icon = icon("line-chart")),
+                    menuSubItem("Collision by Year",tabName = "plot1", icon = icon("line-chart")),     #creating sub menu items
                     menuSubItem("Collision by Day",tabName = "plot2", icon = icon("bar-chart")),
                     menuSubItem("Collision by Hour",tabName = "plot3", icon = icon("area-chart")),
                     menuSubItem("Contributing Factor", tabName = "plot4", icon = icon("area-chart"))),
@@ -19,10 +19,10 @@ shinyUI(dashboardPage(
                     
       
       
-        conditionalPanel("input.sideBarMenu == 'map'",
+        conditionalPanel("input.sideBarMenu == 'map'",              #declaring condition to trigger access to different widgets in different tabs
 
                         selectizeInput('borough1',
-                                        'BOROUGH',
+                                        'BOROUGH',                           #initiating selectize widgets to select from different choices
                                         choice1, selected = "MANHATTAN"),
                         
                         selectizeInput('vehicle1',
@@ -30,20 +30,18 @@ shinyUI(dashboardPage(
                                        c(ALL = 'ALL', choice)),
 
                         radioButtons("times1", "Select time: ",
-                                     c('All' = "time >= '00:00:01' & time <= '23:59:59'",
+                                     c('All' = "time >= '00:00:01' & time <= '23:59:59'",                 #initializing radio buttons
                                        "12:00 am - 6:00 am" = "time >= '00:00:01' & time <= '06:00:00'",
                                        "6:00 am - 12:00 pm" = "time >= '06:00:00' & time <= '12:00:00'",
                                        "12:00 pm - 6:00 pm" = "time >= '12:00:00' & time <= '18:00:00'",
                                        "6:00 pm - 12:00 am" = "time >= '18:00:00' & time <= '23:59:59'"))
 
                        
-                    #actionButton('add', 'Add marker cluster')
-                    #actionButton('clear', 'Clear marker cluster')
-      
+                    
       
         ),
       
-      conditionalPanel("input.sideBarMenu =='data'",
+      conditionalPanel("input.sideBarMenu =='data'",              #condition to trigger tab "data"
                        
                        selectizeInput("selected",
                                       "Select Item to Display",
@@ -58,7 +56,7 @@ shinyUI(dashboardPage(
                        ),
       
       
-      conditionalPanel("input.sideBarMenu == 'heatmap1'",
+      conditionalPanel("input.sideBarMenu == 'heatmap1'",            #initiating condition to trigger heatmap widgets
                       
                     selectizeInput('borough',
                                    'BOROUGH',
@@ -81,15 +79,15 @@ shinyUI(dashboardPage(
                                                        "CYCLIST"="`number of cyclist killed` > 0",
                                                        "MOTORIST"="`number of motorist killed` > 0" )),
                     
-                    sliderInput('heatslide', label = 'Set size of radius (in meters): ', 
+                    sliderInput('heatslide', label = 'Set size of radius (in meters): ',     #slider input to control radius of heatmap
                                 min = 50, max = 500, value = 150, step = 50),
                     dateRangeInput('dateRange',
-                                   label = 'Date range input: yyyy/mm/dd',
+                                   label = 'Date range input: yyyy/mm/dd',           #daterange widget to select range of dates
                                    start = '2013-01-01', end = '2017-12-31',
                                    min = '2013-01-01', max = '2017-12-31'),
                     
                     radioButtons("times", "Select time: ",
-                                 c('All' = "time >= '00:00:00' & time <= '23:59:59'",
+                                 c('All' = "time >= '00:00:00' & time <= '23:59:59'",                   #radiobuttons for different time ranges
                                    "12:00 am - 6:00 am" = "time >= '00:00:01' & time <= '06:00:00'",
                                    "6:00 am - 12:00 pm" = "time >= '06:00:00' & time <= '12:00:00'",
                                    "12:00 pm - 6:00 pm" = "time >= '12:00:00' & time <= '18:00:00'",
@@ -100,15 +98,15 @@ shinyUI(dashboardPage(
                     
     )),
        
-      dashboardBody(
+      dashboardBody(                                  #creating a dashboard body
           tags$head(
-              tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+              tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")  #importing a custom css style from www folder
           ),
           tabItems(
               tabItem(tabName = "map",
-                      fluidRow(box(
+                      fluidRow(box(                     #declaring which maps will display under differnent tabs
                       leafletOutput("map",
-                                    height = 650),
+                                    height = 650),         #adjusting height and width of the output plot
                       width = 12))),
             tabItem(tabName = "heatmap1",
                     fluidRow(box(
