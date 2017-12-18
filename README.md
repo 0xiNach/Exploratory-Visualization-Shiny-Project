@@ -1,5 +1,5 @@
 # Exploratory-Visualization-Shiny-Project
-## NYC Motor Vehicle Collision
+## How safe is it to walk the streets of New York City - NYC Motor Vehicle Collision
 
 ## Blog Post : https://nycdatascience.com/blog/student-works/r-shiny/how-safe-to-walk-the-streets-of-new-york/
 
